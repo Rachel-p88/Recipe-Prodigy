@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Prodigy: Join the Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf6ec;
+    --warm: #f5e6cc;
+    --spice: #d12c3f;
+    --spice-dark: #a81f2f;
+    --herb: #2d5016;
+    --charcoal: #4a2c1d;
+    --muted: #7a6e62;
+    --border: #e2d5c3;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+  }
+
+  /* Left Panel */
+  .left-panel {
+    width: 42%;
+    background: linear-gradient(135deg, #3b0d14, #0b0b0b);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    overflow: hidden;
+  }
+
+  .left-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(201,76,26,0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(45,80,22,0.25) 0%, transparent 50%);
+  }
+
+  .pattern-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.02;
+    background-image: repeating-linear-gradient(
+      45deg,
+      #fff 0, #fff 1px,
+      transparent 0, transparent 50%
+    );
+    background-size: 20px 20px;
+  }
+
+  .brand {
+    position: relative;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .brand-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .brand h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+}
+
+  .brand h1 span {
+  color: var(--spice);
+  font-style: italic;
+}
+
+  .brand p {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.95rem;
+    margin-top: 1rem;
+    line-height: 1.7;
+    max-width: 280px;
+  }
+
+  .divider-line {
+    width: 60px;
+    height: 2px;
+    background: var(--spice);
+    margin: 1.5rem auto;
+  }
+
+  .testimonial {
+    position: relative;
+    z-index: 1;
+    margin-top: 3rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.4rem;
+    max-width: 300px;
+  }
+
+  .testimonial p {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .testimonial .author {
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+  color: var(--spice);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+  /* Right Panel */
+  .right-panel {
+    margin-left: 42%;
+    width: 58%;
+    min-height: 100vh;
+    padding: 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Tabs */
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 2.5rem;
+    border-bottom: 2px solid var(--border);
+    max-width: 460px;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--muted);
+    padding: 0.8rem 2rem;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 2px;
+    background: var(--spice);
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+  }
+
+  .tab-btn.active { color: var(--charcoal); }
+  .tab-btn.active::after { transform: scaleX(1); }
+
+  /* Forms */
+  .auth-form { display: none; max-width: 460px; }
+  .auth-form.active { display: block; }
+
+  .form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+  }
+
+  .form-subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--charcoal);
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .form-group input:focus {
+    border-color: var(--spice);
+    box-shadow: 0 0 0 3px rgba(201,76,26,0.12);
+  }
+
+  .form-group input::placeholder { color: #bbb; }
+
+  /* Phone input with flag */
+  .phone-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+  }
+
+  .phone-wrap:focus-within {
+    border-color: var(--spice);
+    box-shadow: 0 0 0 3px rgba(201,76,26,0.12);
+  }
+
+  .phone-prefix {
+    padding: 0.75rem 0.8rem;
+    background: var(--warm);
+    border-right: 1.5px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .phone-wrap input {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    flex: 1;
+  }
+
+  .phone-wrap input:focus { box-shadow: none !important; }
+
+  /* Password field */
+  .input-icon-wrap {
+    position: relative;
+  }
+
+  .input-icon-wrap input { padding-right: 2.8rem; }
+
+  .toggle-pw {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 1rem;
+    padding: 0;
+    line-height: 1;
+  }
+
+  /* Terms */
+  .terms-group {
+    margin: 1.2rem 0;
+  }
+
+  .terms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    cursor: pointer;
+  }
+
+  .terms-check input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    margin-top: 1px;
+    position: relative;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .terms-check input[type="checkbox"]:checked {
+    background: var(--spice);
+    border-color: var(--spice);
+  }
+
+  .terms-check input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .terms-check span {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .terms-check a {
+    color: var(--spice);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .terms-check a:hover { text-decoration: underline; }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--spice);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-submit:hover { background: var(--spice-dark); }
+  .btn-submit:active { transform: scale(0.99); }
+
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.2rem 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .or-divider::before, .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .btn-google {
+    width: 100%;
+    padding: 0.85rem;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-google:hover {
+    border-color: #aaa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .switch-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .switch-link button {
+    background: none;
+    border: none;
+    color: var(--spice);
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 0;
+  }
+
+  .switch-link button:hover { text-decoration: underline; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--charcoal);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Modal for Terms */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 75vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+  }
+
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--charcoal);
+    margin-bottom: 1.2rem;
+  }
+
+  .modal p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .modal h3 {
+    font-size: 0.95rem;
+    color: var(--charcoal);
+    margin: 1.2rem 0 0.4rem;
+    font-weight: 500;
+  }
+
+  .modal-close {
+    margin-top: 1.5rem;
+    padding: 0.7rem 2rem;
+    background: var(--spice);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .error-msg {
+    font-size: 0.78rem;
+    color: var(--spice);
+    margin-top: 0.3rem;
+    display: none;
+  }
+
+  .form-group.error input { border-color: var(--spice); }
+  .form-group.error .error-msg { display: block; }
+
+  @media (max-width: 768px) {
+    .left-panel { display: none; }
+    .right-panel { margin-left: 0; width: 100%; padding: 2rem 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Left decorative panel -->
+<div class="left-panel">
+  <div class="pattern-bg"></div>
+  <div class="brand">
+    <span class="brand-icon">🥪</span>
+    <h1>Recipe <span class="gap">Prodigy</span></h1>
+    <div class="divider-line"></div>
+    <p>Let's turn your ingredients into something delicious!</p>
+  </div>
+  <div class="testimonial">
+    <p>"Come on! Let's Cook it using Recipe Prodigy. Your mama would be proud!"</p>
+    <div class="author">Developers</div>
+  </div>
+</div>
+
+<!-- Right form panel -->
+<div class="right-panel">
+  <div class="auth-tabs">
+    <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+    <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div class="auth-form active" id="login-form">
+    <div class="form-title">Welcome back</div>
+    <p class="form-subtitle">Sign in to your Recipe Prodigy account</p>
+
+    <div class="form-group" id="lg-email-group">
+      <label>Email Address</label>
+      <input type="email" id="lg-email" placeholder="you@example.com" />
+      <div class="error-msg">Please enter a valid email.</div>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-icon-wrap">
+        <input type="password" id="lg-password" placeholder="••••••••" />
+        <button class="toggle-pw" onclick="togglePw('lg-password', this)">👁</button>
+      </div>
+    </div>
+
+    <div style="text-align:right; margin: -0.5rem 0 1.2rem;">
+      <a href="#" style="font-size:0.82rem; color:var(--spice); text-decoration:none;">Forgot password?</a>
+    </div>
+
+    <button class="btn-submit" onclick="handleLogin()">Sign In →</button>
+
+    <div class="or-divider">or continue with</div>
+
+    <button class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 2.9l6-6C34.3 3.2 29.4 1 24 1 14.7 1 6.8 6.7 3.3 14.8l7 5.4C12.2 13.5 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.5-.1-3-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.8c4.3-4 6.8-9.9 6.8-17z"/><path fill="#FBBC05" d="M10.3 28.2A14.9 14.9 0 0 1 9.5 24c0-1.5.3-2.9.8-4.2l-7-5.4A23.8 23.8 0 0 0 .5 24c0 3.8.9 7.4 2.8 10.6l7-5.4z"/><path fill="#34A853" d="M24 47c5.4 0 10-1.8 13.3-4.8l-7.4-5.8c-1.8 1.2-4.1 1.9-5.9 1.9-6.4 0-11.8-4.3-13.7-10.1l-7 5.4C6.8 41.3 14.7 47 24 47z"/></svg>
+      Continue with Google
+    </button>
+
+    <div class="switch-link">Don't have an account? <button onclick="switchTab('signup')">Create one →</button></div>
+  </div>
+
+  <!-- SIGNUP FORM -->
+  <div class="auth-form" id="signup-form">
+    <div class="form-title">Join the kitchen</div>
+    <p class="form-subtitle">Create your Recipe Prodigy account</p>
+
+    <div class="form-row">
+      <div class="form-group" id="sg-fn-group">
+        <label>First Name</label>
+        <input type="text" id="sg-firstname" placeholder="Jennifer" />
+        <div class="error-msg">Required.</div>
+      </div>
+      <div class="form-group" id="sg-ln-group">
+        <label>Last Name</label>
+        <input type="text" id="sg-lastname" placeholder="BlackFord" />
+        <div class="error-msg">Required.</div>
+      </div>
+    </div>
+
+    <div class="form-group" id="sg-un-group">
+      <label>Username</label>
+      <input type="text" id="sg-username" placeholder="@chefAry" />
+      <div class="error-msg">Username must be at least 3 characters.</div>
+    </div>
+
+    <div class="form-group" id="sg-ph-group">
+      <label>Phone Number</label>
+      <div class="phone-wrap">
+        <span class="phone-prefix">🇮🇳 +91</span>
+        <input type="tel" id="sg-phone" placeholder="9876543210" />
+      </div>
+      <div class="error-msg">Enter a valid 10-digit phone number.</div>
+    </div>
+
+    <div class="form-group" id="sg-em-group">
+      <label>Email Address</label>
+      <input type="email" id="sg-email" placeholder="you@example.com" />
+      <div class="error-msg">Enter a valid email address.</div>
+    </div>
+
+    <div class="form-group" id="sg-pw-group">
+      <label>Password</label>
+      <div class="input-icon-wrap">
+        <input type="password" id="sg-password" placeholder="Min. 8 characters" />
+        <button class="toggle-pw" onclick="togglePw('sg-password', this)">👁</button>
+      </div>
+      <div class="error-msg">Password must be at least 8 characters.</div>
+    </div>
+
+    <div class="terms-group">
+      <label class="terms-check">
+        <input type="checkbox" id="sg-terms" />
+        <span>I agree to Recipe Prodigy's <a href="#" onclick="openTerms(event)">Terms of Service</a> and <a href="#" onclick="openTerms(event)">Privacy Policy</a>. I understand how my data will be used.</span>
+      </label>
+    </div>
+
+    <div class="terms-group">
+      <label class="terms-check">
+        <input type="checkbox" id="sg-newsletter" />
+        <span>I'd like to receive weekly recipe inspiration and community highlights. (Optional)</span>
+      </label>
+    </div>
+
+    <button class="btn-submit" onclick="handleSignup()">Create My Account →</button>
+
+    <div class="or-divider">or continue with</div>
+
+    <button class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 2.9l6-6C34.3 3.2 29.4 1 24 1 14.7 1 6.8 6.7 3.3 14.8l7 5.4C12.2 13.5 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.5-.1-3-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.8c4.3-4 6.8-9.9 6.8-17z"/><path fill="#FBBC05" d="M10.3 28.2A14.9 14.9 0 0 1 9.5 24c0-1.5.3-2.9.8-4.2l-7-5.4A23.8 23.8 0 0 0 .5 24c0 3.8.9 7.4 2.8 10.6l7-5.4z"/><path fill="#34A853" d="M24 47c5.4 0 10-1.8 13.3-4.8l-7.4-5.8c-1.8 1.2-4.1 1.9-5.9 1.9-6.4 0-11.8-4.3-13.7-10.1l-7 5.4C6.8 41.3 14.7 47 24 47z"/></svg>
+      Sign up with Google
+    </button>
+
+    <div class="switch-link">Already have an account? <button onclick="switchTab('login')">Sign in →</button></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ <span id="toast-msg"></span></div>
+
+<!-- Terms Modal -->
+<div class="modal-overlay" id="terms-modal">
+  <div class="modal">
+
+    <div id="terms-content">
+      <h2>Recipe Prodigy – Terms</h2>
+
+      <p>By accessing or using the Recipe Prodigy application, users agree to follow the terms and conditions described below. The purpose of this application is to help users discover possible dishes based on the ingredients they enter. The platform is designed to provide recipe suggestions for informational and convenience purposes only.</p>
+
+      <h3>User Responsibility</h3>
+      <p>Users are responsible for entering correct information and using recipe suggestions carefully. The recipes generated by the application are based on available data and ingredient matching logic. Recipe Prodigy does not guarantee that every recipe suggestion will be suitable for all users.</p>
+
+      <h3>Accuracy of Information</h3>
+      <p>The application aims to provide helpful recipe suggestions, but there may be cases where information is incomplete or not perfectly matched. Cooking results may vary depending on ingredients and preparation methods.</p>
+
+      <h3>Intellectual Property Rights</h3>
+      <p>The design, structure, and system logic of Recipe Prodigy are part of the project's intellectual effort. Users may not reproduce or distribute the system design or data without permission.</p>
+
+      <h3>Limitation of Liability</h3>
+      <p>Recipe Prodigy provides recipe suggestions as guidance only. The developers are not responsible for any health issues, allergies, or outcomes related to food preparation.</p>
+
+      <h3>Acceptance of Terms</h3>
+      <p>By using Recipe Prodigy, users confirm that they understand and agree to these terms. If a user does not agree, they should discontinue using the application.</p>
+    </div>
+
+
+    <div id="privacy-content" style="display:none;">
+      <h2>Privacy Policy</h2>
+
+      <p>Recipe Prodigy respects the privacy of its users. The application may collect limited information such as ingredients entered by the user, usage activity, and optional account information.</p>
+
+      <p>This information is used only to improve recipe suggestions and enhance the user experience. Personal information will not be sold or shared with third parties without permission, except where required by law.</p>
+
+      <p>Reasonable security measures are taken to protect user data from unauthorized access, misuse, or loss.</p>
+    </div>
+
+
+    <div id="ethical-content" style="display:none;">
+      <h2>Ethical Use of the Platform</h2>
+
+      <p>Users agree to use Recipe Prodigy only for lawful and appropriate purposes. Any attempt to misuse the system, manipulate the platform, or perform illegal activities is strictly prohibited.</p>
+
+      <p>Users should not copy, exploit, or distribute the system's logic or data without proper permission.</p>
+    </div>
+
+    <button class="modal-close" onclick="closeTerms()">Close</button>
+
+  </div>
+</div>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup'));
+    });
+    document.getElementById('login-form').classList.toggle('active', tab === 'login');
+    document.getElementById('signup-form').classList.toggle('active', tab === 'signup');
+  }
+
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁' : '💀';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  function setError(groupId, show) {
+    document.getElementById(groupId).classList.toggle('error', show);
+    return show;
+  }
+
+  function handleLogin() {
+    const email = document.getElementById('lg-email').value.trim();
+    let hasErr = false;
+    hasErr = setError('lg-email-group', !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) || hasErr;
+    if (!hasErr) showToast('Signed in successfully! Welcome back 🥪');
+  }
+
+  function handleSignup() {
+    const fn = document.getElementById('sg-firstname').value.trim();
+    const ln = document.getElementById('sg-lastname').value.trim();
+    const un = document.getElementById('sg-username').value.trim();
+    const ph = document.getElementById('sg-phone').value.trim();
+    const em = document.getElementById('sg-email').value.trim();
+    const pw = document.getElementById('sg-password').value;
+    const terms = document.getElementById('sg-terms').checked;
+
+    let hasErr = false;
+    hasErr = setError('sg-fn-group', !fn) || hasErr;
+    hasErr = setError('sg-ln-group', !ln) || hasErr;
+    hasErr = setError('sg-un-group', un.length < 3) || hasErr;
+    hasErr = setError('sg-ph-group', !ph.match(/^\d{10}$/)) || hasErr;
+    hasErr = setError('sg-em-group', !em.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) || hasErr;
+    hasErr = setError('sg-pw-group', pw.length < 8) || hasErr;
+
+    if (!terms) {
+      alert('Please agree to the Terms of Service to continue.');
+      hasErr = true;
+    }
+
+    if (!hasErr) showToast(`Welcome to Recipe Prodigy, ${fn}! 🎉`);
+  }
+
+  function openTerms(e) {
+    e.preventDefault();
+    document.getElementById('terms-modal').classList.add('open');
+  }
+
+  function closeTerms() {
+    document.getElementById('terms-modal').classList.remove('open');
+    document.getElementById('sg-terms').checked = true;
+  }
+
+  document.getElementById('terms-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeTerms();
+  });
+</script>
+</body>
+</html>
