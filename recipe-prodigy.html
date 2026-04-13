@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Prodigy</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ─────────────────────────────────────────────
+   PAGE TRANSITION WRAPPER
+───────────────────────────────────────────── */
+#auth-page, #home-page {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+#auth-page {
+  opacity: 1;
+  transform: translateY(0);
+}
+#auth-page.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+#home-page {
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+}
+#home-page.fade-in {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #fdf6ec;
+  --warm: #f5e6cc;
+  --spice: #d12c3f;
+  --spice-dark: #a81f2f;
+  --herb: #2d5016;
+  --charcoal: #4a2c1d;
+  --muted: #7a6e62;
+  --border: #e2d5c3;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--cream);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.left-panel {
+  width: 42%;
+  background: linear-gradient(135deg, #3b0d14, #0b0b0b);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  overflow: hidden;
+  z-index: 1;
+}
+
+#auth-page .left-panel { display: flex; }
+#home-page ~ .left-panel, #home-page + .left-panel { display: none; }
+
+.left-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(201,76,26,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(45,80,22,0.25) 0%, transparent 50%);
+}
+
+.pattern-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.02;
+  background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%);
+  background-size: 20px 20px;
+}
+
+.brand {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.brand-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.brand h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+}
+
+.brand h1 span { color: var(--spice); font-style: italic; }
+
+.brand p {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.95rem;
+  margin-top: 1rem;
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+.divider-line {
+  width: 60px;
+  height: 2px;
+  background: var(--spice);
+  margin: 1.5rem auto;
+}
+
+.testimonial {
+  position: relative;
+  z-index: 1;
+  margin-top: 3rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1.4rem;
+  max-width: 300px;
+}
+
+.testimonial p {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.testimonial .author {
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+  color: var(--spice);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.right-panel {
+  margin-left: 42%;
+  width: 58%;
+  min-height: 100vh;
+  padding: 3rem 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2.5rem;
+  border-bottom: 2px solid var(--border);
+  max-width: 460px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 0.8rem 2rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 2px;
+  background: var(--spice);
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+
+.tab-btn.active { color: var(--charcoal); }
+.tab-btn.active::after { transform: scaleX(1); }
+
+.auth-form { display: none; max-width: 460px; }
+.auth-form.active { display: block; }
+
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 0.4rem;
+}
+
+.form-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group { margin-bottom: 1.1rem; }
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--charcoal);
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: var(--spice);
+  box-shadow: 0 0 0 3px rgba(201,76,26,0.12);
+}
+
+.form-group input::placeholder { color: #bbb; }
+
+.phone-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.phone-wrap:focus-within {
+  border-color: var(--spice);
+  box-shadow: 0 0 0 3px rgba(201,76,26,0.12);
+}
+
+.phone-prefix {
+  padding: 0.75rem 0.8rem;
+  background: var(--warm);
+  border-right: 1.5px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.phone-wrap input { border: none !important; box-shadow: none !important; border-radius: 0 !important; flex: 1; }
+.phone-wrap input:focus { box-shadow: none !important; }
+
+.input-icon-wrap { position: relative; }
+.input-icon-wrap input { padding-right: 2.8rem; }
+
+.toggle-pw {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.terms-group { margin: 1.2rem 0; }
+
+.terms-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  cursor: pointer;
+}
+
+.terms-check input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  margin-top: 1px;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.terms-check input[type="checkbox"]:checked {
+  background: var(--spice);
+  border-color: var(--spice);
+}
+
+.terms-check input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.terms-check span { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+.terms-check a { color: var(--spice); text-decoration: none; font-weight: 500; }
+.terms-check a:hover { text-decoration: underline; }
+
+.btn-submit {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--spice);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.btn-submit:hover { background: var(--spice-dark); }
+.btn-submit:active { transform: scale(0.99); }
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.2rem 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.or-divider::before, .or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.btn-google {
+  width: 100%;
+  padding: 0.85rem;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-google:hover {
+  border-color: #aaa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.switch-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.switch-link button {
+  background: none;
+  border: none;
+  color: var(--spice);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.switch-link button:hover { text-decoration: underline; }
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--charcoal);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/*terms*/
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 75vh;
+  overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform 0.3s;
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--charcoal);
+  margin-bottom: 1.2rem;
+}
+
+.modal p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.modal h3 {
+  font-size: 0.95rem;
+  color: var(--charcoal);
+  margin: 1.2rem 0 0.4rem;
+  font-weight: 500;
+}
+
+.modal-close {
+  margin-top: 1.5rem;
+  padding: 0.7rem 2rem;
+  background: var(--spice);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.error-msg {
+  font-size: 0.78rem;
+  color: var(--spice);
+  margin-top: 0.3rem;
+  display: none;
+}
+
+.form-group.error input { border-color: var(--spice); }
+.form-group.error .error-msg { display: block; }
+
+@media (max-width: 768px) {
+  .left-panel { display: none !important; }
+  .right-panel { margin-left: 0; width: 100%; padding: 2rem 1.5rem; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/*HOMEPAGE STYLES */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Outfit:wght@300;400;500&display=swap');
+
+#home-page {
+  font-family: 'Outfit', sans-serif;
+  background: #F9F4ED;
+  color: #111010;
+  min-height: 100vh;
+}
+
+.navbar {
+  background: #fdf6ec;
+  border-bottom: 1.5px solid #E8DCC8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 56px;
+}
+
+.logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #111010; letter-spacing: 0.5px; }
+.logo span { color: #C0272D; }
+
+.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-link { font-size: 11px; font-weight: 400; color: #888; cursor: pointer; letter-spacing: 1.2px; text-transform: uppercase; transition: color 0.15s; }
+.nav-link:hover { color: #C0272D; }
+
+.nav-user {
+  font-size: 12px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-avatar {
+  width: 28px; height: 28px;
+  background: #C0272D;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sign-out-btn {
+  background: none;
+  border: 1px solid #E8DCC8;
+  border-radius: 3px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-family: 'Outfit', sans-serif;
+  color: #aaa;
+  cursor: pointer;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.sign-out-btn:hover { border-color: #C0272D; color: #C0272D; }
+
+.hero {
+  background: #fdf6ec;
+  padding: 4rem 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 3px solid #C0272D;
+  margin-bottom: 2.5rem;
+}
+
+.hero-eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #C4688A; font-weight: 400; margin-bottom: 1.25rem; }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.8rem,6vw,5rem); font-weight: 300; color: #111010; text-align: center; line-height: 1; margin-bottom: 0.4rem; letter-spacing: -1px; }
+.hero-title em { font-style: italic; color: #C0272D; }
+.hero-sub { font-size: 14px; color: #888; font-weight: 300; text-align: center; margin-bottom: 2.5rem; letter-spacing: 0.3px; }
+
+.search-wrap {
+  width: 100%; max-width: 700px;
+  background: #F9F4ED; border: 1.5px solid #E8DCC8; border-radius: 4px; padding: 1.5rem;
+}
+
+.chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; margin-bottom: 1rem; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #FFFFFF; border: 1px solid #f0a0a2;
+  color: #C0272D; font-size: 12px; font-weight: 400;
+  padding: 4px 10px; border-radius: 2px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px;
+}
+
+.chip:hover { background: #f9d0d0; }
+
+.inp-row { display: flex; gap: 8px; }
+
+.ing-inp {
+  flex: 1; background: #FFFFFF; border: 1px solid #E8DCC8; border-radius: 3px;
+  padding: 10px 14px; color: #111010; font-size: 13px; font-family: 'Outfit', sans-serif; outline: none; transition: border-color 0.15s;
+}
+
+.ing-inp::placeholder { color: #bbb; }
+.ing-inp:focus { border-color: #E8ADC2; }
+
+.add-btn {
+  background: #E8DCC8; border: 1px solid #D4C4A8; border-radius: 3px;
+  padding: 10px 16px; color: #111010; font-size: 18px; cursor: pointer; transition: all 0.15s; line-height: 1; font-family: 'Outfit', sans-serif;
+}
+
+.add-btn:hover { background: #D4C4A8; }
+
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.find-btn {
+  flex: 1;
+  background: #C0272D;
+  border: none;
+  color: #F9F4ED;
+  font-size: 13px;
+  padding: 12px;
+  border-radius: 3px;
+  letter-spacing: 1.2px;
+  cursor: pointer;
+}
+
+.filter-btn {
+  width: 130px;
+  background: #F9F4ED;
+  border: 1px solid #E8DCC8;
+  color: #666;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.filter-btn:hover {
+  border-color: #C0272D;
+  color: #C0272D;
+}
+
+.category-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  gap: 6px;
+}
+
+.cat-btn {
+  flex: 1;
+  padding: 6px;
+  font-size: 11px;
+  border: 1px solid #E8DCC8;
+  background: #fff;
+  color: #888;
+  border-radius: 3px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.cat-btn:hover {
+  color: #C0272D;
+  border-color: #E8ADC2;
+}
+
+.find-btn:hover { background: #a52025; }
+.find-btn:disabled { background: rgba(192,39,45,0.35); cursor: not-allowed; }
+
+.quick-row { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+.q-add {
+  background: #FFFFFF; border: 1px solid #D4C4A8; border-radius: 2px;
+  padding: 5px 12px; color: #aaa; font-size: 11px; letter-spacing: 0.8px; cursor: pointer;
+  transition: all 0.15s; font-family: 'Outfit', sans-serif; text-transform: uppercase;
+}
+
+.q-add:hover { border-color: #E8ADC2; color: #C4688A; }
+
+.body-area { background: #FFFFFF; width: 100%; padding: 2.5rem 1.5rem; max-width: 980px; margin: 2.5rem 0 auto; border-radius: 6px; }
+
+.sec-label { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: #aaa; margin-bottom: 1.25rem; font-weight: 400; }
+
+.recipes-grid {
+  display: grid; width: 100%; grid-template-columns: repeat(auto-fill, minmax(270px,1fr));
+  gap: 12px; background: #FFFFFF; border: 1px solid #E8DCC8; margin-bottom: 2.5rem;
+}
+
+.recipe-card { background: #FFFFFF; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease; position: relative; }
+.recipe-card:hover { background: #FAFAFA; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
+
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+
+.card-emoji {
+  width: 48px; height: 48px; background: #F2EAD8; border: 1px solid #E8DCC8;
+  border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+}
+
+.discover-card, .saved-card {
+  background: #fff;
+  border: 1px solid #E8DCC8;
+  border-radius: 10px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.discover-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(192,39,45,0.06), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.discover-card:hover::before {
+  opacity: 1;
+}
+
+.discover-card:hover, .saved-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.match-pill { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 2px; background: #C0272D; color: #F9F4ED; letter-spacing: 0.5px; }
+.card-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: #111010; line-height: 1.2; margin-bottom: 6px; }
+.card-meta { display: flex; gap: 12px; font-size: 11px; color: #aaa; margin-bottom: 8px; letter-spacing: 0.3px; }
+.card-desc { font-size: 12px; color: #888; line-height: 1.5; margin-bottom: 10px; font-weight: 300; }
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.ctag { font-size: 10px; padding: 3px 9px; border-radius: 1px; background: #F2EAD8; color: #999; border: 1px solid #E8DCC8; letter-spacing: 0.5px; text-transform: uppercase; }
+
+.empty-state { text-align: center; padding: 4rem 1rem; }
+.empty-icon { font-size: 56px; display: block; margin-bottom: 1rem; }
+.empty-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: #111010; margin-bottom: 0.5rem; }
+.empty-sub { font-size: 13px; color: #aaa; font-weight: 300; max-width: 300px; margin: 0 auto; line-height: 1.6; }
+
+.loading-wrap { display: none; padding: 2.5rem; text-align: center; border: 1px solid #E8DCC8; background: #F2EAD8; margin-bottom: 1.5rem; }
+.loading-wrap.on { display: block; }
+.spin { width: 28px; height: 28px; border: 2px solid #E8DCC8; border-top-color: #C0272D; border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.load-txt { font-size: 13px; color: #999; font-style: italic; font-family: 'Cormorant Garamond', serif; font-weight: 300; }
+
+.err-box { display: none; background: #FCEAEA; border: 1px solid #f0a0a2; border-radius: 3px; padding: 10px 14px; font-size: 12px; color: #C0272D; margin-bottom: 1rem; }
+.err-box.on { display: block; }
+
+.combos-section { margin-bottom: 2rem; }
+.combo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 8px; }
+
+.card-top span:last-child {
+  font-size: 16px;
+  transition: transform 0.15s ease;
+}
+
+.card-top span:last-child:hover {
+  transform: scale(1.2);
+}
+
+.combo-card {
+  background: #F9F4ED; border: 1px solid #E8DCC8; border-radius: 3px;
+  padding: 10px 14px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 10px;
+}
+
+.combo-card:hover { border-color: #E8ADC2; background: #FDF0F5; }
+
+.combo-icon {
+  width: 32px; height: 32px; background: #F2EAD8; border: 1px solid #E8DCC8;
+  border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+
+.combo-name { font-size: 12px; color: #111010; font-weight: 400; line-height: 1.3; }
+.combo-sub { font-size: 10px; color: #bbb; font-weight: 300; letter-spacing: 0.3px; }
+
+.full-recipe { display: none; background: #F2EAD8; border: 1.5px solid #E8DCC8; border-radius: 4px; padding: 2rem; margin-bottom: 1.5rem; position: relative; }
+.full-recipe.open { display: block; }
+
+.close-btn {
+  position: absolute; top: 14px; right: 14px; background: #F9F4ED;
+  border: 1px solid #E8DCC8; border-radius: 3px; padding: 5px 11px; font-size: 11px;
+  cursor: pointer; color: #888; font-family: 'Outfit', sans-serif; letter-spacing: 0.8px; text-transform: uppercase;
+}
+
+.modal-ttl { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: #111010; margin-bottom: 4px; }
+.modal-meta { font-size: 12px; color: #aaa; margin-bottom: 1.5rem; letter-spacing: 0.5px; }
+.modal-sec { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #C4688A; margin-bottom: 10px; margin-top: 1.5rem; }
+.modal-ings { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 6px; }
+.m-ing { font-size: 12px; padding: 6px 10px; background: #F9F4ED; border: 1px solid #E8DCC8; border-radius: 2px; color: #555; }
+.modal-steps { counter-reset: s; }
+.m-step { counter-increment: s; display: flex; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #444; line-height: 1.6; font-weight: 300; }
+.m-step::before {
+  content: counter(s); flex-shrink: 0; width: 22px; height: 22px; background: #C0272D;
+  color: #F9F4ED; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500; margin-top: 2px;
+}
+
+.hp-divider { height: 1px; background: #E8DCC8; margin: 2rem 0; }
+</style>
+</head>
+<body>
+
+<!--AUTH PAGE -->
+<div id="auth-page">
+  <div class="left-panel">
+    <div class="pattern-bg"></div>
+    <div class="brand">
+      <span class="brand-icon">🥪</span>
+      <h1>Recipe <span>Prodigy</span></h1>
+      <div class="divider-line"></div>
+      <p>Let's turn your ingredients into something delicious!</p>
+    </div>
+    <div class="testimonial">
+      <p>"Come on! Let's Cook it. Your mama would be proud!"</p>
+      <div class="author">Developers</div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="auth-tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <div class="auth-form active" id="login-form">
+      <div class="form-title">Welcome back</div>
+      <p class="form-subtitle">Sign in to your Recipe Prodigy account</p>
+
+      <div class="form-group" id="lg-email-group">
+        <label>Email Address</label>
+        <input type="email" id="lg-email" placeholder="you@example.com" />
+        <div class="error-msg">Please enter a valid email.</div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-icon-wrap">
+          <input type="password" id="lg-password" placeholder="••••••••" />
+          <button class="toggle-pw" onclick="togglePw('lg-password', this)">👁</button>
+        </div>
+      </div>
+
+      <div style="text-align:right; margin: -0.5rem 0 1.2rem;">
+        <a href="#" style="font-size:0.82rem; color:var(--spice); text-decoration:none;">Forgot password?</a>
+      </div>
+
+      <button class="btn-submit" onclick="handleLogin()">Sign In →</button>
+
+      <div class="or-divider">or continue with</div>
+
+      <button class="btn-google">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 2.9l6-6C34.3 3.2 29.4 1 24 1 14.7 1 6.8 6.7 3.3 14.8l7 5.4C12.2 13.5 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.5-.1-3-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.8c4.3-4 6.8-9.9 6.8-17z"/><path fill="#FBBC05" d="M10.3 28.2A14.9 14.9 0 0 1 9.5 24c0-1.5.3-2.9.8-4.2l-7-5.4A23.8 23.8 0 0 0 .5 24c0 3.8.9 7.4 2.8 10.6l7-5.4z"/><path fill="#34A853" d="M24 47c5.4 0 10-1.8 13.3-4.8l-7.4-5.8c-1.8 1.2-4.1 1.9-5.9 1.9-6.4 0-11.8-4.3-13.7-10.1l-7 5.4C6.8 41.3 14.7 47 24 47z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="switch-link">Don't have an account? <button onclick="switchTab('signup')">Create one →</button></div>
+    </div>
+
+    <div class="auth-form" id="signup-form">
+      <div class="form-title">Join the kitchen</div>
+      <p class="form-subtitle">Create your Recipe Prodigy account</p>
+
+      <div class="form-row">
+        <div class="form-group" id="sg-fn-group">
+          <label>First Name</label>
+          <input type="text" id="sg-firstname" placeholder="Jennifer" />
+          <div class="error-msg">Required.</div>
+        </div>
+        <div class="form-group" id="sg-ln-group">
+          <label>Last Name</label>
+          <input type="text" id="sg-lastname" placeholder="BlackFord" />
+          <div class="error-msg">Required.</div>
+        </div>
+      </div>
+
+      <div class="form-group" id="sg-un-group">
+        <label>Username</label>
+        <input type="text" id="sg-username" placeholder="@chefAry" />
+        <div class="error-msg">Username must be at least 3 characters.</div>
+      </div>
+
+      <div class="form-group" id="sg-ph-group">
+        <label>Phone Number</label>
+        <div class="phone-wrap">
+          <span class="phone-prefix">🇮🇳 +91</span>
+          <input type="tel" id="sg-phone" placeholder="9876543210" />
+        </div>
+        <div class="error-msg">Enter a valid 10-digit phone number.</div>
+      </div>
+
+      <div class="form-group" id="sg-em-group">
+        <label>Email Address</label>
+        <input type="email" id="sg-email" placeholder="you@example.com" />
+        <div class="error-msg">Enter a valid email address.</div>
+      </div>
+
+      <div class="form-group" id="sg-pw-group">
+        <label>Password</label>
+        <div class="input-icon-wrap">
+          <input type="password" id="sg-password" placeholder="Min. 8 characters" />
+          <button class="toggle-pw" onclick="togglePw('sg-password', this)">👁</button>
+        </div>
+        <div class="error-msg">Password must be at least 8 characters.</div>
+      </div>
+
+      <div class="terms-group">
+        <label class="terms-check">
+          <input type="checkbox" id="sg-terms" />
+          <span>I agree to Recipe Prodigy's <a href="#" onclick="openTerms(event)">Terms of Service</a> and <a href="#" onclick="openTerms(event)">Privacy Policy</a>.</span>
+        </label>
+      </div>
+
+      <div class="terms-group">
+        <label class="terms-check">
+          <input type="checkbox" id="sg-newsletter" />
+          <span>I'd like to receive weekly recipe inspiration. (Optional)</span>
+        </label>
+      </div>
+
+      <button class="btn-submit" onclick="handleSignup()">Create My Account →</button>
+
+      <div class="or-divider">or continue with</div>
+
+      <button class="btn-google">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 2.9l6-6C34.3 3.2 29.4 1 24 1 14.7 1 6.8 6.7 3.3 14.8l7 5.4C12.2 13.5 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.5-.1-3-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.8c4.3-4 6.8-9.9 6.8-17z"/><path fill="#FBBC05" d="M10.3 28.2A14.9 14.9 0 0 1 9.5 24c0-1.5.3-2.9.8-4.2l-7-5.4A23.8 23.8 0 0 0 .5 24c0 3.8.9 7.4 2.8 10.6l7-5.4z"/><path fill="#34A853" d="M24 47c5.4 0 10-1.8 13.3-4.8l-7.4-5.8c-1.8 1.2-4.1 1.9-5.9 1.9-6.4 0-11.8-4.3-13.7-10.1l-7 5.4C6.8 41.3 14.7 47 24 47z"/></svg>
+        Sign up with Google
+      </button>
+
+      <div class="switch-link">Already have an account? <button onclick="switchTab('login')">Sign in →</button></div>
+    </div>
+  </div>
+
+</div><!-- end #auth-page -->
+
+<div id="home-page">
+
+  <div class="navbar">
+    <div class="logo">Recipe <span>Prodigy</span></div>
+    <div class="nav-links">
+      <span class="nav-link">Cuisines</span>
+      <span class="nav-link" onclick="showDiscover()">Discover</span>
+      <span class="nav-link" onclick="showSaved()">Saved</span>
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">?</div>
+        <span id="nav-username-display"></span>
+        <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="savedSection" style="display:none">
+    <button onclick="closePanels()">← Back</button>
+    <p class="sec-label">Saved Recipes</p>
+    <div class="recipes-grid" id="savedGrid"></div>
+  </div>
+  
+  <div id="discoverSection" style="display:none">
+    <button onclick="closePanels()">← Back</button>
+    <p class="sec-label">Discover Recipes</p>
+    <div class="recipes-grid" id="discoverGrid"></div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow" id="hero-greeting"></div>
+    <h1 class="hero-title">Cook what you <em>love</em></h1>
+    <p class="hero-sub">Drop your ingredients below</p>
+    <div class="search-wrap">
+      <div class="chips-area" id="chips"></div>
+      <!-- INPUT ROW -->
+       <div class="inp-row">
+        <input class="ing-inp" id="ingInp" placeholder="Add an ingredient..." />
+        <button class="add-btn" id="addBtn">+</button>
+      </div>
+
+       <div class="action-row">
+        <button class="find-btn" id="findBtn">Generate Recipes</button>
+        <button class="filter-btn" onclick="toggleFilters()">Filters</button>
+      </div>
+
+      <div class="category-row">
+        <button class="cat-btn" onclick="setCategory('breakfast', event)">Breakfast</button>
+        <button class="cat-btn" onclick="setCategory('lunch', event)">Lunch</button>
+        <button class="cat-btn" onclick="setCategory('snacks', event)">Snacks</button>
+        <button class="cat-btn" onclick="setCategory('dinner', event)">Dinner</button>
+      </div>
+   
+    <div id="filtersPanel" style="display:none; margin-top:10px;">
+      <select id="timeFilter">
+        <option value="">Any Time</option>
+        <option value="15">Under 15 min</option>
+        <option value="30">Under 30 min</option>
+        <option value="60">Under 60 min</option>
+      </select>
+        
+      <select id="cuisineFilter">
+        <option value="">Any Cuisine</option>
+        <option value="North Indian">North Indian</option>
+        <option value="South Indian">South Indian</option>
+        <option value="Continental">Continental</option>
+        <option value="Chinese">Chinese</option>
+        <option value="European">European</option>
+        <option value="Mexican">Mexican</option>
+        <option value="Italian">Italian</option>
+        <option value="Indian">Indian</option>
+      </select>
+        
+      <select id="vegFilter">
+        <option value="">All</option>
+        <option value="veg">Veg</option>
+        <option value="nonveg">Non-Veg</option>
+      </select>
+    </div>
+
+    <div class="quick-row">
+      <span style="font-size:10px;color:#ccc;letter-spacing:1px;text-transform:uppercase;margin-right:6px;">Quick add</span>
+      <button class="q-add" onclick="qAdd('chicken')">Chicken</button>
+      <button class="q-add" onclick="qAdd('potato')">Potato</button>
+      <button class="q-add" onclick="qAdd('eggs')">Eggs</button>
+      <button class="q-add" onclick="qAdd('tomato')">Tomato</button>
+      <button class="q-add" onclick="qAdd('garlic')">Garlic</button>
+      <button class="q-add" onclick="qAdd('cheese')">Cheese</button>
+      <button class="q-add" onclick="qAdd('rice')">Rice</button>
+      <button class="q-add" onclick="qAdd('paneer')">Paneer</button>
+      <button class="q-add" onclick="qAdd('lemon')">Lemon</button>
+    </div>
+  </div>
+
+  <div class="body-area">
+    <div class="err-box" id="errBox"></div>
+    <div class="loading-wrap" id="loadWrap">
+      <div class="spin"></div>
+      <p class="load-txt" id="loadTxt">Searching the culinary universe...</p>
+    </div>
+    <div class="full-recipe" id="recipeModal">
+      <button class="close-btn" onclick="closeModal()">Close</button>
+      <div id="modalContent"></div>
+    </div>
+    <div id="resultsSection" style="display:none">
+      <p class="sec-label" id="resLabel">Results</p>
+      <div class="recipes-grid" id="recipeGrid"></div>
+    </div>
+    <div id="emptyState" class="empty-state">
+      <span class="empty-icon">🍽</span>
+      <h2 class="empty-title">Your pantry, your canvas</h2>
+      <p class="empty-sub">Type in ingredients you have at home and let us build your next favourite meal.</p>
+    </div>
+    <div class="hp-divider"></div>
+    <div class="combos-section">
+      <p class="sec-label">Curated ingredient combos</p>
+      <div class="combo-grid">
+        <div class="combo-card" onclick="setCombo(['chicken','garlic','lemon','rosemary'])">
+          <div class="combo-icon">🍋</div>
+          <div><div class="combo-name">Lemon herb chicken</div><div class="combo-sub">4 ingredients</div></div>
+        </div>
+        <div class="combo-card" onclick="setCombo(['potato','tomato','ginger','cheese'])">
+          <div class="combo-icon">🥔</div>
+          <div><div class="combo-name">Potato Paneer</div><div class="combo-sub">4 ingredients</div></div>
+        </div>
+        <div class="combo-card" onclick="setCombo(['Urad dal','red chilli','ginger','cumin seeds'])">
+          <div class="combo-icon">🥘</div>
+          <div><div class="combo-name">Maa Ki Dal</div><div class="combo-sub">4 ingredients</div></div>
+        </div>
+        <div class="combo-card" onclick="setCombo(['rice','tomato','potato','carrot','capsicum'])">
+          <div class="combo-icon">🍱</div>
+          <div><div class="combo-name">Vegetable Pulao</div><div class="combo-sub">5 ingredients</div></div>
+        </div>
+        <div class="combo-card" onclick="setCombo(['lentils','onion','cumin','tomato','garlic'])">
+          <div class="combo-icon">🫘</div>
+          <div><div class="combo-name">Spiced dal</div><div class="combo-sub">5 ingredients</div></div>
+        </div>
+        <div class="combo-card" onclick="setCombo(['potato','lemon','onion','garlic','egg'])">
+          <div class="combo-icon">🥞</div>
+          <div><div class="combo-name">Potato Pancakes</div><div class="combo-sub">5 ingredients</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ <span id="toast-msg"></span></div>
+
+<!-- Terms Modal -->
+<div class="modal-overlay" id="terms-modal">
+  <div class="modal">
+    <div id="terms-content">
+      <h2>Recipe Prodigy - Terms</h2>
+      <p>By accessing or using the Recipe Prodigy application, users agree to follow the terms and conditions described below. The purpose of this application is to help users discover possible dishes based on the ingredients they enter.</p>
+      <h3>User Responsibility</h3>
+      <p>Users are responsible for entering correct information and using recipe suggestions carefully. Recipe Prodigy does not guarantee that every recipe suggestion will be suitable for all users.</p>
+      <h3>Accuracy of Information</h3>
+      <p>The application aims to provide helpful recipe suggestions, but cooking results may vary depending on ingredients and preparation methods.</p>
+      <h3>Intellectual Property Rights</h3>
+      <p>The design, structure, and system logic of Recipe Prodigy are part of the project's intellectual effort. Users may not reproduce or distribute the system design or data without permission.</p>
+      <h3>Limitation of Liability</h3>
+      <p>Recipe Prodigy provides recipe suggestions as guidance only. The developers are not responsible for any health issues, allergies, or outcomes related to food preparation.</p>
+    </div>
+    <button class="modal-close" onclick="closeTerms()">Close</button>
+  </div>
+</div>
+
+
+<script>
+/*SHARED UTILS */
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.innerHTML = (isError ? '❌ ' : '✅ ') + '<span>' + msg + '</span>';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* PAGE TRANSITION */
+function goToHomepage(displayName) {
+  // Update navbar greeting
+  const initial = displayName ? displayName[0].toUpperCase() : '?';
+  document.getElementById('nav-avatar').textContent = initial;
+  document.getElementById('nav-username-display').textContent = displayName || '';
+  document.getElementById('hero-greeting').textContent =
+    displayName ? 'Welcome, ' + displayName + ' 👨‍🍳' : 'Welcome 👨‍🍳';
+
+  const authPage = document.getElementById('auth-page');
+  authPage.classList.add('fade-out');
+
+  setTimeout(() => {
+    authPage.style.display = 'none';
+    // Hide the left panel (it's inside auth-page now handled by display:none)
+    const homePage = document.getElementById('home-page');
+    homePage.style.display = 'block';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        homePage.classList.add('fade-in');
+      });
+    });
+    window.scrollTo(0, 0);
+  }, 500);
+}
+
+function signOut() {
+  const homePage = document.getElementById('home-page');
+  homePage.style.opacity = '0';
+  homePage.style.transform = 'translateY(-20px)';
+  setTimeout(() => {
+    homePage.style.display = 'none';
+    homePage.classList.remove('fade-in');
+    homePage.style.opacity = '';
+    homePage.style.transform = '';
+    const authPage = document.getElementById('auth-page');
+    authPage.style.display = 'flex';
+    authPage.classList.remove('fade-out');
+    // Reset form fields
+    ['lg-email', 'lg-password'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    window.scrollTo(0, 0);
+  }, 400);
+}
+
+/* AUTH LOGIC */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup'));
+  });
+  document.getElementById('login-form').classList.toggle('active', tab === 'login');
+  document.getElementById('signup-form').classList.toggle('active', tab === 'signup');
+}
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '💀';
+}
+
+function setError(groupId, show) {
+  document.getElementById(groupId).classList.toggle('error', show);
+  return show;
+}
+
+function handleLogin() {
+  const email = document.getElementById('lg-email').value.trim();
+  let hasErr = false;
+  hasErr = setError('lg-email-group', !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) || hasErr;
+
+  if (!hasErr) {
+    const displayName = email.split('@')[0];
+    showToast('Signed in successfully! Welcome back 🥪');
+    setTimeout(() => goToHomepage(displayName), 800);
+  }
+}
+
+function handleSignup() {
+  const fn    = document.getElementById('sg-firstname').value.trim();
+  const ln    = document.getElementById('sg-lastname').value.trim();
+  const un    = document.getElementById('sg-username').value.trim();
+  const ph    = document.getElementById('sg-phone').value.trim();
+  const em    = document.getElementById('sg-email').value.trim();
+  const pw    = document.getElementById('sg-password').value;
+  const terms = document.getElementById('sg-terms').checked;
+
+  let hasErr = false;
+  hasErr = setError('sg-fn-group', !fn) || hasErr;
+  hasErr = setError('sg-ln-group', !ln) || hasErr;
+  hasErr = setError('sg-un-group', un.length < 3) || hasErr;
+  hasErr = setError('sg-ph-group', !ph.match(/^\d{10}$/)) || hasErr;
+  hasErr = setError('sg-em-group', !em.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) || hasErr;
+  hasErr = setError('sg-pw-group', pw.length < 8) || hasErr;
+
+  localStorage.setItem("user", JSON.stringify({
+    name: fn,
+    email: em
+  }));
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if(user) goToHomepage(user.name);
+
+  if (!terms) {
+    alert('Please agree to the Terms of Service to continue.');
+    hasErr = true;
+  }
+
+  if (!hasErr) {
+    showToast('Welcome to Recipe Prodigy, ' + fn + '! 🎉');
+    setTimeout(() => goToHomepage(fn), 800);
+  }
+}
+
+function openTerms(e) {
+  e.preventDefault();
+  document.getElementById('terms-modal').classList.add('open');
+}
+
+function closeTerms() {
+  document.getElementById('terms-modal').classList.remove('open');
+  document.getElementById('sg-terms').checked = true;
+}
+
+document.getElementById('terms-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeTerms();
+});
+
+/* HOMEPAGE RECIPE LOGIC */
+let ings = [];
+let selectedMeal = "";
+const loadMsgs = [
+  "Searching the culinary universe...",
+  "Matching flavours and techniques...",
+  "Curating your personal menu...",
+  "Almost ready... finishing touches..."
+];
+
+let selectedCategory = null;
+
+async function setCategory(cat, event) {
+
+  // Toggle OFF if same clicked again
+  if (selectedCategory === cat) {
+    selectedCategory = null;
+
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.style.background = '#fff';
+      btn.style.color = '#888';
+    });
+
+    return;
+  }
+
+  selectedCategory = cat;
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.style.background = '#fff';
+    btn.style.color = '#888';
+  });
+
+  event.target.style.background = '#C0272D';
+  event.target.style.color = '#fff';
+
+  // Call backend
+  fetchCategoryRecipes(cat);
+}
+
+async function fetchCategoryRecipes(category) {
+  const lw = document.getElementById('loadWrap');
+  const rs = document.getElementById('resultsSection');
+  const es = document.getElementById('emptyState');
+
+  lw.classList.add('on');
+  rs.style.display = 'none';
+  es.style.display = 'none';
+
+  try {
+    const res = await fetch("/recommend-by-category", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ category: category })
+    });
+
+    const recipes = await res.json();
+
+    if (!recipes || recipes.length === 0) {
+      showErr("No recipes found for this category.");
+      return;
+    }
+
+    renderRecipes(recipes);
+
+  } catch (e) {
+    console.error(e);
+    showErr("Something went wrong.");
+  }finally{
+  lw.classList.remove('on');
+}}
+
+function saveRecipe(recipe) {
+  let saved = JSON.parse(localStorage.getItem("savedRecipes")) || [];
+
+  if (!saved.some(r => r.name === recipe.name)) {
+    saved.push(recipe);
+    showToast("Recipe saved!");
+  } else {
+    showToast("Already saved!");
+  }
+
+  localStorage.setItem("savedRecipes", JSON.stringify(saved));
+}
+
+function showSaved() {
+  const saved = JSON.parse(localStorage.getItem("savedRecipes")) || [];
+
+  document.getElementById('savedSection').style.display = 'block';
+  document.getElementById('discoverSection').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'none';
+
+  if (saved.length === 0) {
+    document.getElementById('savedGrid').innerHTML = "<p>No saved recipes yet.</p>";
+    return;
+  }
+
+  window._saved = saved;
+
+  document.getElementById('savedGrid').innerHTML = saved.map((r, i) => `
+  <div class="recipe-card saved-card" onclick="openSavedRecipe(${i})">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div style="font-size:20px">${r.emoji || "❤️"}</div>
+      <span style="font-size:10px; color:#888;">SAVED</span>
+    </div>
+
+    <div class="card-title">${r.name}</div>
+
+    <div class="card-desc">${r.description}</div>
+
+    <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+      <button onclick="deleteRecipe(${i}); event.stopPropagation()" 
+        style="font-size:10px; border:none; background:#FCEAEA; color:#C0272D; padding:4px 8px; cursor:pointer;">
+        Remove
+      </button>
+    </div>
+
+  </div>
+`).join('');
+}
+
+function openSavedRecipe(i) {
+  const recipe = window._saved[i];
+  showRecipeFromObject(recipe);
+}
+
+function showRecipeFromObject(r) {
+  const modal = document.getElementById('recipeModal');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div>
+      <div class="modal-ttl">${r.name}</div>
+      <div class="modal-meta">${r.time} · ${r.servings} servings · ${r.difficulty}</div>
+    </div>
+
+    <div class="modal-sec">Ingredients</div>
+    <div class="modal-ings">
+      ${r.ingredients.map(ing => `<div class="m-ing">${ing}</div>`).join('')}
+    </div>
+
+    <div class="modal-sec">Instructions</div>
+    <div class="modal-steps">
+      ${r.steps.map(s => `<div class="m-step">${s}</div>`).join('')}
+    </div>
+  `;
+
+  modal.classList.add('open');
+}
+
+function deleteRecipe(index) {
+    let saved = JSON.parse(localStorage.getItem("savedRecipes")) || [];
+    saved.splice(index, 1);
+    localStorage.setItem("savedRecipes", JSON.stringify(saved));
+    showSaved();
+}
+
+async function showDiscover() {
+  console.log("Discover clicked");
+
+  document.getElementById('discoverSection').style.display = 'block';
+  document.getElementById('savedSection').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'none';
+
+  try {
+    const res = await fetch("/discover");
+    console.log("Status:", res.status);
+
+    const recipes = await res.json();
+    console.log("Recipes:", recipes);
+
+    if (!recipes || recipes.length === 0) {
+      document.getElementById('discoverGrid').innerHTML = "<p>No recipes found.</p>";
+      return;
+    }
+
+    window._recs = recipes;
+
+    document.getElementById('discoverGrid').innerHTML = recipes.map((r, i) => {
+      const meta = r.time ? `${r.time}` 
+      : (r.cuisine ? r.cuisine : "Quick recipe");
+      
+      return `
+      <div class="recipe-card discover-card" onclick="showRecipe(${i})">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="font-size:22px">${r.emoji || "🍽️"}</div>
+          <span style="font-size:10px; color:#C0272D; letter-spacing:1px;">VIEW</span>
+          </div>
+          
+          <div class="card-title">${r.name}</div>
+          
+          <div style="font-size:11px; color:#aaa; margin:4px 0;">
+            ${meta}
+            </div>
+            
+            <div class="card-desc">
+              ${r.description || `A ${r.cuisine || "delicious"} dish worth trying.`}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+  } catch (e) {
+    console.error("Discover error:", e);
+    showErr("Couldn't load discover recipes.");
+  }
+}
+
+function closePanels() {
+  document.getElementById('savedSection').style.display = 'none';
+  document.getElementById('discoverSection').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'block';
+}
+
+function loadCategory(category) {
+    fetch("/recommend-by-category", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ category: category })
+    })
+    .then(res => res.json())
+    .then(data => displayRecipes(data))
+    .catch(err => console.error(err));
+}
+
+function renderChips() {
+  document.getElementById('chips').innerHTML = ings.map((v, i) =>
+    `<span class="chip" onclick="rmIng(${i})">${v} <span style="opacity:0.6">×</span></span>`
+  ).join('');
+}
+
+function addIng(v) {
+  v = v.trim().toLowerCase();
+  if (!v || ings.includes(v)) return;
+  ings.push(v);
+  renderChips();
+  document.getElementById('ingInp').value = '';
+}
+
+function rmIng(i) { ings.splice(i, 1); renderChips(); }
+function qAdd(v) { addIng(v); }
+function setCombo(arr) { ings = [...arr]; renderChips(); findRecipes(); }
+
+document.getElementById('addBtn').onclick = () => addIng(document.getElementById('ingInp').value);
+document.getElementById('ingInp').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addIng(document.getElementById('ingInp').value); }
+});
+document.getElementById('findBtn').onclick = findRecipes;
+
+function showErr(msg) {
+  const el = document.getElementById('errBox');
+  el.textContent = msg;
+  el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 5000);
+}
+
+async function findRecipes() {
+  if (!ings.length && !selectedMeal && !selectedCategory) {
+    showErr('Add ingredients or select a meal/filter.');
+    return;
+  }
+
+  const btn = document.getElementById('findBtn');
+  const lw  = document.getElementById('loadWrap');
+  const rs  = document.getElementById('resultsSection');
+  const es  = document.getElementById('emptyState');
+  const rm  = document.getElementById('recipeModal');
+
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  lw.classList.add('on');
+  rs.style.display = 'none';
+  es.style.display = 'none';
+  rm.classList.remove('open');
+
+  let mi = 0;
+  const iv = setInterval(() => {
+    mi = (mi + 1) % loadMsgs.length;
+    document.getElementById('loadTxt').textContent = loadMsgs[mi];
+  }, 2000);
+
+  try {
+    const res = await fetch("/recommend", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ingredients: ings,
+        category: selectedCategory,
+        meal: selectedMeal,
+        maxTime: document.getElementById("timeFilter").value,
+        cuisine: document.getElementById("cuisineFilter").value,
+        veg: document.getElementById("vegFilter").value
+      })
+    });
+    
+    console.log("Status:", res.status);
+    
+    const recipes = await res.json();
+    console.log("Recipes received:", recipes);
+    
+    if (!Array.isArray(recipes) || recipes.length === 0) {
+      showErr("No recipes found. Try different ingredients.");
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+    renderRecipes(recipes);
+  
+  } catch (e) {
+  console.error("Frontend error:", e);
+  showErr('Something went wrong. Check console.');
+    document.getElementById('emptyState').style.display = 'block';
+  }
+
+  clearInterval(iv);
+  lw.classList.remove('on');
+  btn.disabled = false;
+  btn.textContent = 'Generate Recipes';
+}
+
+function toggleFilters() {
+  const panel = document.getElementById("filtersPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
+
+function setMeal(meal) {
+  selectedMeal = meal;
+  showToast("Selected: " + meal);
+  findRecipes();
+}
+
+function renderRecipes(recipes) {
+  document.getElementById('resLabel').textContent = `${recipes.length} recipes for: ${ings.join(', ')}`;
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('recipeGrid').innerHTML = recipes.map((r, i) => `
+    <div class="recipe-card" onclick="showRecipe(${i})">
+      <div class="card-top">
+        <div class="card-emoji">${r.emoji}</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="match-pill">${Math.round(r.matchPercent)}%</span>
+          <span onclick='saveRecipe(${JSON.stringify(r)})'>❤️</span>
+          </div>
+        </div>
+      <div class="card-title">${r.name}</div>
+      <div class="card-meta"><span>${r.time}</span><span>${r.servings} servings</span><span>${r.difficulty}</span></div>
+      <div class="card-desc">${r.description}</div>
+      <div class="card-tags">
+        ${(r.tags || []).map(t => `<span class="ctag">${t}</span>`).join('')}</div>
+      </div>`).join('');
+  window._recs = recipes;
+}
+
+function showRecipe(i) {
+  const r = window._recs[i];
+  const modal = document.getElementById('recipeModal');
+  document.getElementById('modalContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px">
+      <div style="width:52px;height:52px;background:#F9F4ED;border:1px solid #E8DCC8;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">${r.emoji}</div>
+      <div>
+        <div class="modal-ttl">${r.name}</div>
+        <div class="modal-meta">${r.time} · ${r.servings} servings · ${r.difficulty} · <span style="color:#C0272D">${Math.round(r.matchPercent)}% match</span></div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:#999;font-style:italic;margin-bottom:0.5rem;font-family:'Cormorant Garamond',serif;font-weight:300">${r.description}</div>
+    <div class="modal-sec">Ingredients</div>
+    <div class="modal-ings">${r.ingredients.map(ing => `<div class="m-ing">${ing}</div>`).join('')}</div>
+    <div class="modal-sec">Instructions</div>
+    <div class="modal-steps">${r.steps.map(s => `<div class="m-step">${s}</div>`).join('')}</div>`;
+  modal.classList.add('open');
+  modal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeModal() { document.getElementById('recipeModal').classList.remove('open'); }
+</script>
+
+</body>
+</html>
